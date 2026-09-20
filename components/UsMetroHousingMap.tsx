@@ -1,16 +1,15 @@
 'use client';
 
-import { UsVectorLandmass } from './UsVectorLandmass';
-
 import React, { useState } from 'react';
+import { UsVectorLandmass } from './UsVectorLandmass';
 import { Home, TrendingUp, TrendingDown, MapPin, Building, Info, ExternalLink } from 'lucide-react';
 
 export interface MetroHousingData {
   id: string;
   name: string;
   state: string;
-  lat: number;
-  lng: number;
+  x: number;
+  y: number;
   medianPrice: number;
   priceYoY: number;
   caseShillerIndex: number;
@@ -27,8 +26,8 @@ export const US_METROS: MetroHousingData[] = [
     id: 'nyc',
     name: 'New York MSA',
     state: 'NY',
-    lat: 40.7128,
-    lng: -74.0060,
+    x: 825.0,
+    y: 200.0,
     medianPrice: 649000,
     priceYoY: 5.4,
     caseShillerIndex: 328.4,
@@ -43,8 +42,8 @@ export const US_METROS: MetroHousingData[] = [
     id: 'lax',
     name: 'Los Angeles Metro',
     state: 'CA',
-    lat: 34.0522,
-    lng: -118.2437,
+    x: 95.0,
+    y: 350.0,
     medianPrice: 920000,
     priceYoY: 3.8,
     caseShillerIndex: 341.2,
@@ -59,8 +58,8 @@ export const US_METROS: MetroHousingData[] = [
     id: 'chi',
     name: 'Chicago Metro',
     state: 'IL',
-    lat: 41.8781,
-    lng: -87.6298,
+    x: 590.0,
+    y: 205.0,
     medianPrice: 355000,
     priceYoY: 6.8,
     caseShillerIndex: 214.8,
@@ -75,8 +74,8 @@ export const US_METROS: MetroHousingData[] = [
     id: 'dfw',
     name: 'Dallas-Fort Worth',
     state: 'TX',
-    lat: 32.7767,
-    lng: -96.7970,
+    x: 445.0,
+    y: 385.0,
     medianPrice: 412000,
     priceYoY: 1.2,
     caseShillerIndex: 305.1,
@@ -91,8 +90,8 @@ export const US_METROS: MetroHousingData[] = [
     id: 'mia',
     name: 'Miami-Fort Lauderdale',
     state: 'FL',
-    lat: 25.7617,
-    lng: -80.1918,
+    x: 785.0,
+    y: 535.0,
     medianPrice: 585000,
     priceYoY: 6.9,
     caseShillerIndex: 428.6,
@@ -107,8 +106,8 @@ export const US_METROS: MetroHousingData[] = [
     id: 'phx',
     name: 'Phoenix Metro',
     state: 'AZ',
-    lat: 33.4484,
-    lng: -112.0740,
+    x: 195.0,
+    y: 380.0,
     medianPrice: 448000,
     priceYoY: 2.7,
     caseShillerIndex: 335.2,
@@ -123,8 +122,8 @@ export const US_METROS: MetroHousingData[] = [
     id: 'sea',
     name: 'Seattle Metro',
     state: 'WA',
-    lat: 47.6062,
-    lng: -122.3321,
+    x: 65.0,
+    y: 55.0,
     medianPrice: 825000,
     priceYoY: 5.1,
     caseShillerIndex: 392.4,
@@ -139,8 +138,8 @@ export const US_METROS: MetroHousingData[] = [
     id: 'sfo',
     name: 'San Francisco Bay Area',
     state: 'CA',
-    lat: 37.7749,
-    lng: -122.4194,
+    x: 45.0,
+    y: 255.0,
     medianPrice: 1280000,
     priceYoY: 2.1,
     caseShillerIndex: 342.1,
@@ -155,8 +154,8 @@ export const US_METROS: MetroHousingData[] = [
     id: 'atl',
     name: 'Atlanta Metro',
     state: 'GA',
-    lat: 33.7490,
-    lng: -84.3880,
+    x: 685.0,
+    y: 385.0,
     medianPrice: 399000,
     priceYoY: 4.8,
     caseShillerIndex: 320.5,
@@ -171,8 +170,8 @@ export const US_METROS: MetroHousingData[] = [
     id: 'bos',
     name: 'Boston Metro',
     state: 'MA',
-    lat: 42.3601,
-    lng: -71.0589,
+    x: 880.0,
+    y: 175.0,
     medianPrice: 760000,
     priceYoY: 6.4,
     caseShillerIndex: 348.9,
@@ -185,42 +184,26 @@ export const US_METROS: MetroHousingData[] = [
   }
 ];
 
-function projectUsCoords(lat: number, lng: number): { x: number; y: number } {
-  // Bounding box for CONUS: Lng [-125, -67], Lat [24, 50]
-  const minLng = -125;
-  const maxLng = -67;
-  const minLat = 24.5;
-  const maxLat = 49.5;
-
-  const x = ((lng - minLng) / (maxLng - minLng)) * 100;
-  const y = ((maxLat - lat) / (maxLat - minLat)) * 100;
-
-  return {
-    x: Math.max(2, Math.min(98, x)),
-    y: Math.max(4, Math.min(96, y))
-  };
-}
-
 export function UsMetroHousingMap() {
   const [selectedMetro, setSelectedMetro] = useState<MetroHousingData>(US_METROS[0]);
-  const [metricView, setMetricView] = useState<'caseShiller' | 'rent' | 'price'>('caseShiller');
+  const [metricView, setMetricView] = useState<'caseShiller' | 'rent'>('caseShiller');
 
   return (
-    <div className="w-full bg-[#FFFFFF] border border-[#E4E9F0] rounded-xl overflow-hidden shadow-sm my-6">
+    <div className="w-full bg-[#FFFFFF] border border-[#E4E9F0] rounded-xl overflow-hidden shadow-sm my-6 font-mono">
       {/* Header bar */}
       <div className="bg-[#F6F8FB] px-5 py-4 border-b border-[#E4E9F0] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <div className="flex items-center gap-2">
             <span className="inline-block w-2.5 h-2.5 rounded-full bg-[#0BA360] animate-pulse"></span>
-            <h2 className="text-base font-bold text-[#101828] uppercase tracking-wide">
-              CONUS Metro Housing & Rent Tactical Map
+            <h2 className="text-base font-bold text-[#101828] uppercase tracking-wide font-display">
+              Case-Shiller & ZORI Geospatial Terminal
             </h2>
-            <span className="text-xs bg-[#E4E9F0] text-[#344054] px-2 py-0.5 rounded font-mono font-semibold">
-              S&P CoreLogic / Zillow ZORI
+            <span className="text-xs bg-[#E4E9F0] text-[#344054] px-2 py-0.5 rounded font-bold">
+              60d Vintage Lag Stamped
             </span>
           </div>
-          <p className="text-xs text-[#667085] mt-1">
-            Strict Invariant: Repeat-sales index is not a transaction median. 60-day reporting lag explicitly preserved.
+          <p className="text-xs text-[#667085] mt-1 font-sans">
+            Strict Invariant: Case-Shiller index and Zillow ZORI tracks actual release cycles. Never blends disparate months.
           </p>
         </div>
 
@@ -244,164 +227,168 @@ export function UsMetroHousingMap() {
                 : 'text-[#475467] hover:bg-[#F6F8FB]'
             }`}
           >
-            ZORI Rent ($/mo)
-          </button>
-          <button
-            onClick={() => setMetricView('price')}
-            className={`text-xs px-2.5 py-1 rounded font-medium transition ${
-              metricView === 'price'
-                ? 'bg-[#0E63C4] text-[#FFFFFF] shadow-xs'
-                : 'text-[#475467] hover:bg-[#F6F8FB]'
-            }`}
-          >
-            Median Sale ($)
+            ZORI Rent (YoY %)
           </button>
         </div>
       </div>
 
-      {/* SVG Canvas */}
-      <div className="relative w-full bg-[#F8FAFC] border-b border-[#E4E9F0] overflow-hidden" style={{ minHeight: '340px' }}>
+      {/* SVG Canvas with In-SVG Locked Metro Indicators */}
+      <div className="relative w-full bg-[#EEF4FB] border-b border-[#E4E9F0] overflow-hidden">
         <svg
           viewBox="0 0 960 600"
-          className="w-full h-auto max-h-[440px] select-none pointer-events-none"
+          className="w-full h-auto max-h-[480px] select-none"
           preserveAspectRatio="xMidYMid meet"
         >
-          <UsVectorLandmass />
-        </svg>
+          {/* Base Vector Landmass */}
+          <UsVectorLandmass showLabels={true} />
 
-        {/* Pin Markers */}
-        <div className="absolute inset-0 pointer-events-auto">
-          {US_METROS.map((metro) => {
-            const { x, y } = projectUsCoords(metro.lat, metro.lng);
-            const isSelected = selectedMetro.id === metro.id;
-            return (
-              <div
-                key={metro.id}
-                style={{ left: `${x}%`, top: `${y}%` }}
-                className="absolute -translate-x-1/2 -translate-y-1/2 cursor-pointer group z-10"
-                onClick={() => setSelectedMetro(metro)}
-              >
-                <div
-                  className={`relative flex items-center justify-center transition-transform ${
-                    isSelected ? 'scale-125 z-20' : 'hover:scale-110'
-                  }`}
+          {/* Cartographically Locked Metro Indicators */}
+          <g className="metro-indicators">
+            {US_METROS.map((metro) => {
+              const isSelected = selectedMetro.id === metro.id;
+              const isHighGrowth = metro.caseShillerYoY > 5;
+              const badgeColor = isHighGrowth ? '#0E63C4' : '#0BA360';
+              const displayVal = metricView === 'caseShiller' ? `+${metro.caseShillerYoY}%` : `+${metro.zoriYoY}%`;
+
+              return (
+                <g
+                  key={metro.id}
+                  transform={`translate(${metro.x}, ${metro.y})`}
+                  onClick={() => setSelectedMetro(metro)}
+                  className="cursor-pointer"
+                  style={{
+                    filter: isSelected
+                      ? 'drop-shadow(0 4px 10px rgba(0,0,0,0.30))'
+                      : 'drop-shadow(0 2px 4px rgba(0,0,0,0.12))',
+                  }}
                 >
-                  <span
-                    className={`absolute w-7 h-7 rounded-full opacity-30 ${
-                      metro.caseShillerYoY > 5 ? 'bg-[#0E63C4]' : 'bg-[#0BA360]'
-                    } ${isSelected ? 'animate-ping' : ''}`}
+                  {/* Aura Ring */}
+                  <circle
+                    r={isSelected ? 18 : 12}
+                    fill={badgeColor}
+                    opacity={isSelected ? 0.35 : 0.2}
+                    className={isSelected ? 'animate-pulse' : ''}
                   />
-                  <div
-                    className={`w-6 h-6 rounded-full flex items-center justify-center border-2 shadow-md ${
-                      isSelected
-                        ? 'bg-[#0E63C4] border-[#FFFFFF] text-[#FFFFFF]'
-                        : 'bg-[#FFFFFF] border-[#0E63C4] text-[#0E63C4]'
-                    }`}
-                  >
-                    <Building className="w-3 h-3" />
-                  </div>
 
-                  {/* Label pill */}
-                  <div
-                    className={`absolute top-7 left-1/2 -translate-x-1/2 whitespace-nowrap px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold shadow-xs border pointer-events-none transition ${
-                      isSelected
-                        ? 'bg-[#101828] text-[#FFFFFF] border-[#101828]'
-                        : 'bg-[#FFFFFF]/95 text-[#344054] border-[#E4E9F0]'
-                    }`}
-                  >
-                    {metro.name.split(' ')[0]} :{' '}
-                    {metricView === 'caseShiller'
-                      ? `+${metro.caseShillerYoY}%`
-                      : metricView === 'rent'
-                      ? `$${metro.zoriRent}`
-                      : `$${(metro.medianPrice / 1000).toFixed(0)}k`}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+                  {/* Pin Circle */}
+                  <circle
+                    r={isSelected ? 10 : 8}
+                    fill={isSelected ? badgeColor : '#FFFFFF'}
+                    stroke={badgeColor}
+                    strokeWidth={isSelected ? 2.5 : 2}
+                  />
+
+                  {/* Icon dot */}
+                  <circle
+                    r={3}
+                    fill={isSelected ? '#FFFFFF' : badgeColor}
+                  />
+
+                  {/* Metro Label Pill */}
+                  <g transform={`translate(0, ${isSelected ? 20 : 16})`}>
+                    <rect
+                      x="-38"
+                      y="-9"
+                      width="76"
+                      height="18"
+                      rx="4"
+                      fill={isSelected ? '#101828' : '#FFFFFF'}
+                      stroke={isSelected ? '#101828' : '#CBD5E1'}
+                      strokeWidth="1.2"
+                    />
+                    <text
+                      x="0"
+                      y="3.5"
+                      textAnchor="middle"
+                      fill={isSelected ? '#FFFFFF' : '#1E293B'}
+                      fontSize="9"
+                      fontFamily="JetBrains Mono, monospace"
+                      fontWeight="700"
+                    >
+                      {metro.name.split(' ')[0]}: {displayVal}
+                    </text>
+                  </g>
+                </g>
+              );
+            })}
+          </g>
+        </svg>
       </div>
 
-      {/* Detail Dossier & Invariant Proof */}
+      {/* Selected Metro Detail Dossier */}
       <div className="p-5 bg-[#FFFFFF] border-t border-[#E4E9F0] grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="md:col-span-2 space-y-2">
-          <div className="flex items-center gap-2">
-            <h3 className="text-base font-bold text-[#101828]">{selectedMetro.name}</h3>
-            <span className="text-xs font-mono font-semibold px-2 py-0.5 bg-[#F6F8FB] border border-[#E4E9F0] text-[#344054] rounded">
+          <div className="flex items-center gap-2 flex-wrap">
+            <h3 className="text-base font-bold text-[#101828] font-display">{selectedMetro.name}</h3>
+            <span className="text-xs px-2 py-0.5 bg-[#F6F8FB] border border-[#E4E9F0] text-[#344054] rounded font-bold">
               {selectedMetro.state}
             </span>
-            <span className="text-xs font-mono text-[#0E63C4] bg-[#F0F6FF] px-2 py-0.5 rounded">
+            <span className="text-xs px-2 py-0.5 bg-[#EDFBF2] border border-[#73E2A3] text-[#087443] rounded font-bold">
               {selectedMetro.adjustment}
             </span>
           </div>
 
           <div className="grid grid-cols-3 gap-2 pt-2">
             <div className="bg-[#F6F8FB] border border-[#E4E9F0] rounded-lg p-2.5">
-              <span className="text-[10px] text-[#667085] uppercase tracking-wider block font-semibold">
-                Case-Shiller Index
+              <span className="text-[10px] text-[#667085] uppercase tracking-wider block font-semibold font-sans">
+                Median Price
               </span>
-              <span className="text-base font-bold font-mono text-[#101828]">{selectedMetro.caseShillerIndex}</span>
-              <div className="flex items-center gap-1 text-xs text-[#0BA360] font-semibold mt-0.5">
-                <TrendingUp className="w-3 h-3" /> +{selectedMetro.caseShillerYoY}% YoY
-              </div>
+              <span className="text-sm font-bold text-[#101828]">
+                ${(selectedMetro.medianPrice / 1000).toFixed(0)}k
+              </span>
+              <span
+                className={`text-[10px] font-semibold block mt-0.5 ${
+                  selectedMetro.priceYoY >= 0 ? 'text-[#0BA360]' : 'text-[#B42318]'
+                }`}
+              >
+                {selectedMetro.priceYoY >= 0 ? '+' : ''}
+                {selectedMetro.priceYoY}% YoY
+              </span>
             </div>
 
             <div className="bg-[#F6F8FB] border border-[#E4E9F0] rounded-lg p-2.5">
-              <span className="text-[10px] text-[#667085] uppercase tracking-wider block font-semibold">
-                ZORI Rent Asking
+              <span className="text-[10px] text-[#667085] uppercase tracking-wider block font-semibold font-sans">
+                Case-Shiller Index
               </span>
-              <span className="text-base font-bold font-mono text-[#101828]">
-                ${selectedMetro.zoriRent.toLocaleString()}
+              <span className="text-sm font-bold text-[#0E63C4]">{selectedMetro.caseShillerIndex}</span>
+              <span className="text-[10px] text-[#0BA360] font-semibold block mt-0.5">
+                +{selectedMetro.caseShillerYoY}% YoY
               </span>
-              <div
-                className={`flex items-center gap-1 text-xs font-semibold mt-0.5 ${
+            </div>
+
+            <div className="bg-[#F6F8FB] border border-[#E4E9F0] rounded-lg p-2.5">
+              <span className="text-[10px] text-[#667085] uppercase tracking-wider block font-semibold font-sans">
+                ZORI Median Rent
+              </span>
+              <span className="text-sm font-bold text-[#101828]">${selectedMetro.zoriRent}/mo</span>
+              <span
+                className={`text-[10px] font-semibold block mt-0.5 ${
                   selectedMetro.zoriYoY >= 0 ? 'text-[#0BA360]' : 'text-[#B42318]'
                 }`}
               >
-                {selectedMetro.zoriYoY >= 0 ? (
-                  <>
-                    <TrendingUp className="w-3 h-3" /> +{selectedMetro.zoriYoY}% YoY
-                  </>
-                ) : (
-                  <>
-                    <TrendingDown className="w-3 h-3" /> {selectedMetro.zoriYoY}% YoY
-                  </>
-                )}
-              </div>
-            </div>
-
-            <div className="bg-[#F6F8FB] border border-[#E4E9F0] rounded-lg p-2.5">
-              <span className="text-[10px] text-[#667085] uppercase tracking-wider block font-semibold">
-                Median Transaction
-              </span>
-              <span className="text-base font-bold font-mono text-[#101828]">
-                ${selectedMetro.medianPrice.toLocaleString()}
-              </span>
-              <span className="text-xs text-[#667085] block mt-0.5 font-medium">
-                {selectedMetro.inventoryWeeks} wks inventory
+                {selectedMetro.zoriYoY >= 0 ? '+' : ''}
+                {selectedMetro.zoriYoY}% YoY
               </span>
             </div>
           </div>
         </div>
 
-        {/* Vintage & Invariant Column */}
+        {/* Inventory & Vintage Lag Notice */}
         <div className="md:col-span-2 bg-[#F8FAFC] border border-[#E4E9F0] rounded-lg p-3.5 flex flex-col justify-between">
-          <div className="space-y-1.5">
+          <div className="space-y-1.5 font-sans">
             <div className="flex items-center gap-1.5 text-xs font-semibold text-[#101828]">
               <Info className="w-4 h-4 text-[#0E63C4]" />
-              <span>Vintage & Methodological Distinction</span>
+              <span>Vintage Release Lag & S&P CoreLogic Method</span>
             </div>
             <p className="text-xs text-[#475467] leading-relaxed">
-              <strong>Reporting Vintage:</strong> {selectedMetro.lagNote}. S&P CoreLogic Case-Shiller indices are subject to a constant 2-month release lag due to deed record processing. Asking rents from Zillow ZORI track the previous calendar month.
+              Indices use repeat-sales pricing on single-family homes with an explicit 2-month reporting delay.
+              Currently reporting <strong className="text-[#101828]">{selectedMetro.lagNote}</strong>.
             </p>
           </div>
 
           <div className="pt-2 border-t border-[#E4E9F0] flex items-center justify-between text-xs text-[#667085]">
-            <span>Lat: {selectedMetro.lat.toFixed(4)}°N, Lng: {Math.abs(selectedMetro.lng).toFixed(4)}°W</span>
-            <span className="text-[#0E63C4] font-medium flex items-center gap-1">
-              Federal Reserve FRED / S&P Dow Jones
-            </span>
+            <span>Active Supply: {selectedMetro.inventoryWeeks} wks inventory</span>
+            <span className="text-[#0E63C4] font-semibold font-sans">FRED & CoreLogic Matched</span>
           </div>
         </div>
       </div>

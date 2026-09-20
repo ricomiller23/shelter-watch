@@ -1,5 +1,7 @@
 'use client';
 
+import { UsMetroHousingMap } from "@/components/UsMetroHousingMap";
+
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { 
@@ -134,6 +136,8 @@ export default function LiveBoardPage() {
       <div className="border-l-4 border-brand bg-brand-soft/40 p-4 rounded-r-md text-xs text-brand-ink leading-relaxed font-mono">
         <strong>Index ≠ Price & Lag Invariant:</strong> The Case-Shiller index (336.663) is a repeat-sales index normalised to January 2000 = 100. It measures the velocity of price change for a consistent housing basket, not dollars. All Case-Shiller numbers represent a 3-month moving average with a 2-month publication lag. SA and NSA series are strictly isolated.
       </div>
+
+      <UsMetroHousingMap />
 
       {/* Interactive Payment Shock Simulator */}
       <div className="bg-white border border-border rounded-lg p-6 shadow-sm space-y-4">

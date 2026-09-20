@@ -1,5 +1,7 @@
 'use client';
 
+import { UsVectorLandmass } from './UsVectorLandmass';
+
 import React, { useState } from 'react';
 import { Home, TrendingUp, TrendingDown, MapPin, Building, Info, ExternalLink } from 'lucide-react';
 
@@ -260,26 +262,11 @@ export function UsMetroHousingMap() {
       {/* SVG Canvas */}
       <div className="relative w-full bg-[#F8FAFC] border-b border-[#E4E9F0] overflow-hidden" style={{ minHeight: '340px' }}>
         <svg
-          viewBox="0 0 100 65"
-          className="w-full h-auto max-h-[420px] select-none pointer-events-none"
+          viewBox="0 0 960 600"
+          className="w-full h-auto max-h-[440px] select-none pointer-events-none"
           preserveAspectRatio="xMidYMid meet"
         >
-          {/* Subtle US outline stylization */}
-          <path
-            d="M 5,20 L 15,15 L 30,12 L 50,14 L 70,10 L 88,14 L 95,25 L 94,40 L 90,52 L 80,60 L 76,55 L 68,58 L 52,60 L 45,55 L 30,52 L 18,50 L 8,45 L 3,30 Z"
-            fill="#FFFFFF"
-            stroke="#CBD5E1"
-            strokeWidth="0.6"
-            strokeDasharray="1 1"
-          />
-          {/* Latitude guide lines */}
-          <line x1="2" y1="20" x2="98" y2="20" stroke="#E2E8F0" strokeWidth="0.3" />
-          <line x1="2" y1="35" x2="98" y2="35" stroke="#E2E8F0" strokeWidth="0.3" />
-          <line x1="2" y1="50" x2="98" y2="50" stroke="#E2E8F0" strokeWidth="0.3" />
-          {/* Longitude guide lines */}
-          <line x1="25" y1="5" x2="25" y2="60" stroke="#E2E8F0" strokeWidth="0.3" />
-          <line x1="50" y1="5" x2="50" y2="60" stroke="#E2E8F0" strokeWidth="0.3" />
-          <line x1="75" y1="5" x2="75" y2="60" stroke="#E2E8F0" strokeWidth="0.3" />
+          <UsVectorLandmass />
         </svg>
 
         {/* Pin Markers */}
